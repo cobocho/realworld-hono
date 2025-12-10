@@ -1,12 +1,21 @@
 {
-	"compilerOptions": {
-		"strict": true,
-		"baseUrl": ".",
-		"paths": {
-			"@core/*": ["./src/core/*"],
-			"@integrations/*": ["./src/integrations/*"],
-			"@features/*": ["./src/features/*"],
-			"@shared/*": ["./src/shared/*"]
-		}
-	}
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@core/*": ["./src/core/*"],
+      "@integrations/*": ["./src/integrations/*"],
+      "@features/*": ["./src/features/*"],
+      "@shared/*": ["./src/shared/*"]
+    }
+  }
 }

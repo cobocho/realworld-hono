@@ -1,7 +1,7 @@
 {
   "name": "realworld-hono",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
+    "dev": "bun run --preload ./src/setup.ts --hot src/index.ts",
     "db:local": "docker compose up -d",
     "db:generate": "drizzle-kit generate --config src/core/db/drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config src/core/db/drizzle.config.ts",
@@ -11,10 +11,13 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.7.5",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.0",
     "hono": "^4.10.8",
     "pg": "^8.16.3",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.10.0",
     "zod": "^4.1.13"
   },
   "devDependencies": {
