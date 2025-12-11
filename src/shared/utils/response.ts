@@ -34,19 +34,13 @@ export class Response {
 
   static error(
     c: Context,
-    {
-      message,
-      details,
-      data,
-      status,
-    }: ResponseInterface & { details?: unknown }
+    { message, errors, status }: ResponseInterface & { errors?: unknown }
   ) {
     return c.json(
       {
         success: false,
         message,
-        details,
-        data,
+        errors,
         status,
       },
       status

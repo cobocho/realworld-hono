@@ -12,6 +12,7 @@ export const errorHandler = (err: Error, c: Context) => {
   if (err instanceof AppError) {
     return Response.error(c, {
       message: err.message,
+      errors: err.errors,
       status: err.status as HttpStatusCodeType,
     });
   }

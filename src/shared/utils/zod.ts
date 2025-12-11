@@ -10,11 +10,14 @@ export const zv = <T extends z.ZodTypeAny>(
 ) => {
   return zValidator(target, schema, (result, c) => {
     if (!result.success) {
-      const errorMessage = result.error.issues
-        .map(issue => issue.message)
-        .join(', ');
+      const errorMessage = result.error.issues.map(issue => ({
+        field: issue.path.join('.'),
+        message: issue.message,
+      }));
 
-      throw new ValidationError(errorMessage);
+      console.log(errorMessage);
+
+      throw new ValidationError('Validation error', errorMessage);
     }
   });
 };

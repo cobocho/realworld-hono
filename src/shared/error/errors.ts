@@ -10,7 +10,7 @@ export class AppError extends HTTPException {
     status: ContentfulStatusCode,
     message: string,
     public code: string,
-    public details?: unknown
+    public errors?: unknown
   ) {
     super(status, { message });
   }
@@ -18,8 +18,8 @@ export class AppError extends HTTPException {
 
 // 검증 에러
 export class ValidationError extends AppError {
-  constructor(message: string, details?: unknown) {
-    super(400, message, 'VALIDATION_ERROR', details);
+  constructor(message: string, errors?: unknown) {
+    super(400, message, 'VALIDATION_ERROR', errors);
   }
 }
 
