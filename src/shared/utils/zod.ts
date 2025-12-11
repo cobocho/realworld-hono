@@ -8,14 +8,12 @@ export const zv = <T extends z.ZodTypeAny>(
   target: keyof ValidationTargets,
   schema: T
 ) => {
-  return zValidator(target, schema, (result, c) => {
+  return zValidator(target, schema, result => {
     if (!result.success) {
       const errorMessage = result.error.issues.map(issue => ({
         field: issue.path.join('.'),
         message: issue.message,
       }));
-
-      console.log(errorMessage);
 
       throw new ValidationError('Validation error', errorMessage);
     }

@@ -1,17 +1,20 @@
 import { inject, injectable } from 'tsyringe';
 
-import { User } from '@core/db/schema';
+import type { User } from '@core/db/schema';
 
 import { ConflictError } from '@shared/error/errors';
 
+import { AuthService } from '../services/auth-service';
 import { UsersRepository } from '../users.repository';
-import { UserRegisterDto } from '../validation/user-register.dto';
+import type { UserRegisterDto } from '../validation/user-register.dto';
 
 @injectable()
 export class UserRegistrationUseCase {
   constructor(
     @inject(UsersRepository)
-    private readonly usersRepository: UsersRepository
+    private readonly usersRepository: UsersRepository,
+    @inject(AuthService)
+    private readonly authService: AuthService
   ) {}
 
   async execute({ user }: UserRegisterDto): Promise<User> {
@@ -21,6 +24,10 @@ export class UserRegistrationUseCase {
       throw new ConflictError(`User with email ${user.email} already exists`);
     }
 
-    return this.usersRepository.createUser({ user });
+    const hashedPassword = await this.authService.hashPassword(user.password);
+
+    return this.usersRepository.createUser({
+      user: { ...user, password: hashedPassword },
+    });
   }
 }

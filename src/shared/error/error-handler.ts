@@ -1,24 +1,31 @@
-import { Context } from 'hono';
+import type { Context } from 'hono';
+import { ZodError } from 'zod';
 
-import {
-  HttpStatusCode,
-  HttpStatusCodeType,
-  Response,
-} from '../utils/response';
+import { HttpStatusCode } from '../utils/response';
 
 import { AppError } from './errors';
 
 export const errorHandler = (err: Error, c: Context) => {
-  if (err instanceof AppError) {
-    return Response.error(c, {
-      message: err.message,
-      errors: err.errors,
-      status: err.status as HttpStatusCodeType,
-    });
+  if (err instanceof ZodError) {
+    console.log('zod error', err.issues);
   }
 
-  return Response.error(c, {
-    message: 'Internal server error, ' + err.message,
-    status: HttpStatusCode.internalServerError,
-  });
+  if (err instanceof AppError) {
+    return c.json(
+      {
+        message: err.message,
+        errors: err.errors,
+        status: HttpStatusCode.badRequest,
+      },
+      HttpStatusCode.badRequest
+    );
+  }
+
+  return c.json(
+    {
+      message: 'Internal server error, ' + err.message,
+      status: HttpStatusCode.internalServerError,
+    },
+    HttpStatusCode.internalServerError
+  );
 };

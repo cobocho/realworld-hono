@@ -1,4 +1,4 @@
-import { Context } from 'hono';
+import z from 'zod';
 
 export const HttpStatusCode = {
   success: 200,
@@ -13,37 +13,16 @@ export const HttpStatusCode = {
 export type HttpStatusCodeType =
   (typeof HttpStatusCode)[keyof typeof HttpStatusCode];
 
-export interface ResponseInterface {
+export interface ResponseInterface<T = unknown> {
   status: HttpStatusCodeType;
   message?: string;
-  data?: unknown;
+  data?: T;
 }
 
-export class Response {
-  static success(c: Context, { message, data, status }: ResponseInterface) {
-    return c.json(
-      {
-        success: true,
-        message,
-        data,
-        status,
-      },
-      status
-    );
-  }
+export const responseMessage = <T extends string>(message: T) => {
+  return z.literal(message).openapi({ example: message }) as z.ZodLiteral<T>;
+};
 
-  static error(
-    c: Context,
-    { message, errors, status }: ResponseInterface & { errors?: unknown }
-  ) {
-    return c.json(
-      {
-        success: false,
-        message,
-        errors,
-        status,
-      },
-      status
-    );
-  }
-}
+export const responseStatus = (status: HttpStatusCodeType) => {
+  return z.number().openapi({ example: status });
+};
