@@ -7,7 +7,7 @@ import { users } from '@core/db/schema';
 
 import { db } from '@integrations/database';
 
-import type { UserRegisterDto } from './validation/user-register.dto';
+import type { UserRegisterDto } from '../validation/user-register.dto';
 
 @injectable()
 export class UsersRepository extends BaseRepository {

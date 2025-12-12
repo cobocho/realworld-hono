@@ -1,4 +1,4 @@
-import { Context } from 'hono';
+import type { Context } from 'hono';
 import { ZodError, z } from 'zod';
 
 import { HttpStatusCode } from '@shared/utils/response';
@@ -7,12 +7,14 @@ export const zodErrorSchema = z.object({
   message: z.string().openapi({ example: 'Validation error' }),
   status: z.number().openapi({ example: 400 }),
   errors: z.array(
-    z.object({
-      field: z.string().openapi({ example: 'username' }),
-      message: z
-        .string()
-        .openapi({ example: 'Username must be at least 3 characters long' }),
-    })
+    z
+      .object({
+        field: z.string().openapi({ example: 'user.username' }),
+        message: z
+          .string()
+          .openapi({ example: 'Username must be at least 3 characters long' }),
+      })
+      .optional()
   ),
 });
 

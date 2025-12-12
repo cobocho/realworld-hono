@@ -9,11 +9,21 @@ export const userRegisterSchema = z.object({
       })
       .max(20, {
         message: 'Username must be at most 20 characters long',
+      })
+      .openapi({
+        example: 'john_doe',
       }),
-    email: z.email(),
-    password: z.string().min(8, {
-      message: 'Password must be at least 8 characters long',
+    email: z.email().openapi({
+      example: 'john.doe@example.com',
     }),
+    password: z
+      .string()
+      .min(8, {
+        message: 'Password must be at least 8 characters long',
+      })
+      .openapi({
+        example: 'password',
+      }),
   }),
 });
 

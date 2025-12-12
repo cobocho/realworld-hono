@@ -3,8 +3,9 @@ import { container } from 'tsyringe';
 import { createHono } from '@shared/utils/open-api';
 import { HttpStatusCode } from '@shared/utils/response';
 
-import { userRegisterRoute } from './docs/openapi';
-import { UserRegistrationUseCase } from './use-cases/user-registration';
+import { userLoginRoute, userRegisterRoute } from './docs/openapi';
+import { UserLoginUseCase } from './use-cases/user-login-use-case';
+import { UserRegistrationUseCase } from './use-cases/user-registration-use-case';
 
 import './users.di';
 
@@ -19,7 +20,7 @@ userApp.openapi(userRegisterRoute, async c => {
 
   return c.json(
     {
-      message: 'User created successfully',
+      message: 'User created successfully' as const,
       user: {
         email,
         username,
@@ -29,6 +30,29 @@ userApp.openapi(userRegisterRoute, async c => {
       status: HttpStatusCode.created,
     },
     HttpStatusCode.created
+  );
+});
+
+userApp.openapi(userLoginRoute, async c => {
+  const user = c.req.valid('json');
+
+  const userLoginUseCase = container.resolve(UserLoginUseCase);
+  const { email, username, bio, image, token } =
+    await userLoginUseCase.execute(user);
+
+  return c.json(
+    {
+      message: 'User logged in successfully' as const,
+      user: {
+        email,
+        username,
+        bio,
+        image,
+        token,
+      },
+      status: HttpStatusCode.success,
+    },
+    HttpStatusCode.success
   );
 });
 

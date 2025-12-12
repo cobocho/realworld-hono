@@ -5,7 +5,7 @@ import type { User } from '@core/db/schema';
 import { ConflictError } from '@shared/error/errors';
 
 import { AuthService } from '../services/auth-service';
-import { UsersRepository } from '../users.repository';
+import { UsersRepository } from '../repositories/users-repository';
 import type { UserRegisterDto } from '../validation/user-register.dto';
 
 @injectable()

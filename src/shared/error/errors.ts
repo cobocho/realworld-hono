@@ -1,6 +1,6 @@
 // errors/custom-errors.ts
 import { HTTPException } from 'hono/http-exception';
-import { ContentfulStatusCode } from 'hono/utils/http-status';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
 import { HttpStatusCode } from '@shared/utils/response';
 
@@ -37,22 +37,22 @@ export class DatabaseError extends AppError {
 
 // 인증 에러
 export class AuthenticationError extends AppError {
-  constructor(message: string = '인증이 필요합니다') {
+  constructor(message: string = 'Authentication required') {
     super(401, message, 'AUTHENTICATION_ERROR');
   }
 }
 
 // 권한 에러
 export class AuthorizationError extends AppError {
-  constructor(message: string = '권한이 없습니다') {
+  constructor(message: string = 'Authorization required') {
     super(403, message, 'AUTHORIZATION_ERROR');
   }
 }
 
 // 리소스 없음 에러
 export class NotFoundError extends AppError {
-  constructor(resource: string = '리소스') {
-    super(404, `${resource}를 찾을 수 없습니다`, 'NOT_FOUND');
+  constructor(resource: string = 'Resource not found') {
+    super(404, `${resource} not found`, 'NOT_FOUND');
   }
 }
 
