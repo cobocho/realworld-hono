@@ -5,6 +5,7 @@ import { jwtMiddleware } from '@features/users/middlewares/jwt-middleware';
 import { zodErrorSchema } from '@shared/hooks/after-zod-error';
 import { HttpStatusCode } from '@shared/utils/response';
 
+import { editUserSchema } from '../validation/edit-user-dto';
 import { getUserResponseSchema } from '../validation/get-user.dto';
 import {
   userLoginResponseSchema,
@@ -153,6 +154,47 @@ export const getUserRoute = createRoute({
           schema: z.object({
             message: z.string().openapi({ example: 'Unauthorized' }),
           }),
+        },
+      },
+    },
+  },
+});
+
+export const editUserRoute = createRoute({
+  method: 'put',
+  path: '/',
+  tags: ['users'],
+  summary: 'Edit a user',
+  description: 'Edit a user',
+  middleware: [jwtMiddleware],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: editUserSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    [HttpStatusCode.success]: {
+      description: 'User edited',
+    },
+    [HttpStatusCode.unauthorized]: {
+      description: 'Unauthorized',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string().openapi({ example: 'Unauthorized' }),
+          }),
+        },
+      },
+    },
+    [HttpStatusCode.badRequest]: {
+      description: 'Validation error',
+      content: {
+        'application/json': {
+          schema: zodErrorSchema,
         },
       },
     },

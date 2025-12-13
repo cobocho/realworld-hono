@@ -6,6 +6,7 @@ import { users } from '@core/db/schema';
 
 import { db } from '@integrations/database';
 
+import type { EditUserDto } from '../validation/edit-user-dto';
 import type { UserRegisterDto } from '../validation/user-register.dto';
 
 @injectable()
@@ -42,6 +43,22 @@ export class UsersRepository extends BaseRepository {
         .from(users)
         .where(eq(users.user_id, userId))
         .limit(1);
+
+      return user;
+    });
+  }
+
+  async updateUser(userId: string, userData: EditUserDto) {
+    return this.executeQuery(async () => {
+      const [user] = await db
+        .update(users)
+        .set({
+          email: userData.user.email,
+          bio: userData.user.bio,
+          image: userData.user.image,
+        })
+        .where(eq(users.user_id, userId))
+        .returning();
 
       return user;
     });

@@ -5,10 +5,12 @@ import { createHono } from '@shared/utils/open-api';
 import { HttpStatusCode } from '@shared/utils/response';
 
 import {
+  editUserRoute,
   getUserRoute,
   userLoginRoute,
   userRegisterRoute,
 } from './docs/openapi';
+import { EditUserUseCase } from './use-cases/edit-user-use-case';
 import { GetUserUseCase } from './use-cases/get-user-use-case';
 import { UserLoginUseCase } from './use-cases/user-login-use-case';
 import { UserRegistrationUseCase } from './use-cases/user-registration-use-case';
@@ -74,6 +76,22 @@ userApp.openapi(getUserRoute, async c => {
   return c.json({
     user,
     message: 'User retrieved successfully' as const,
+    status: HttpStatusCode.success,
+  });
+});
+
+userApp.openapi(editUserRoute, async c => {
+  const payload = c.get('payload') as JwtPayload;
+
+  const editUserUseCase = container.resolve(EditUserUseCase);
+  const user = await editUserUseCase.execute(
+    payload.userId,
+    c.req.valid('json')
+  );
+
+  return c.json({
+    user,
+    message: 'User edited successfully' as const,
     status: HttpStatusCode.success,
   });
 });
