@@ -18,7 +18,6 @@ export abstract class BaseRepository {
     }
   }
 
-  // 자주 사용하는 패턴들을 메서드로 제공
   protected async findOne<T>(
     operation: () => Promise<T[]>,
     errorContext?: string
@@ -37,6 +36,16 @@ export abstract class BaseRepository {
   }
 
   protected async insertOne<T>(
+    operation: () => Promise<T[]>,
+    errorContext?: string
+  ): Promise<T> {
+    return this.executeQuery(async () => {
+      const [result] = await operation();
+      return result;
+    }, errorContext);
+  }
+
+  protected async upsertOne<T>(
     operation: () => Promise<T[]>,
     errorContext?: string
   ): Promise<T> {

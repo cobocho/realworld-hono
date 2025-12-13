@@ -1,15 +1,23 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
-import { jwtMiddleware } from '@features/users/middlewares/jwt-middleware';
+import {
+  jwtMiddleware,
+  optionalJwtMiddleware,
+} from '@features/users/middlewares/jwt-middleware';
 
 import { HttpStatusCode } from '@shared/utils/response';
 
 import { editUserResponseSchema, editUserSchema } from '../model/edit-user-dto';
 import {
+  followUserParamsSchema,
+  followUserResponseSchema,
+} from '../model/follow-user.dto';
+import {
   getProfileResponseSchema,
   getProfileSchema,
 } from '../model/get-profile';
 import { getUserResponseSchema } from '../model/get-user.dto';
+import { unfollowUserParamsSchema } from '../model/unfollow-user.dto';
 import {
   userLoginResponseSchema,
   userLoginSchema,
@@ -160,6 +168,7 @@ export const getProfileRoute = createRoute({
   tags: ['users'],
   summary: 'Get a profile',
   description: 'Get a profile',
+  middleware: [optionalJwtMiddleware],
   request: {
     params: getProfileSchema,
   },
@@ -174,6 +183,81 @@ export const getProfileRoute = createRoute({
               .string()
               .openapi({ example: 'Profile retrieved successfully' }),
             status: z.literal(HttpStatusCode.success),
+          }),
+        },
+      },
+    },
+  },
+});
+
+export const followUserRoute = createRoute({
+  method: 'post',
+  path: '/{userId}/follow',
+  tags: ['users'],
+  summary: 'Follow a user',
+  description: 'Follow a user',
+  middleware: [jwtMiddleware],
+  request: {
+    params: followUserParamsSchema,
+  },
+  responses: {
+    [HttpStatusCode.success]: {
+      description: 'User followed',
+      content: {
+        'application/json': {
+          schema: z.object({
+            user: followUserResponseSchema,
+            message: z
+              .string()
+              .openapi({ example: 'User followed successfully' }),
+            status: z.literal(HttpStatusCode.success),
+          }),
+        },
+      },
+    },
+    [HttpStatusCode.badRequest]: {
+      description: 'User already followed',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string().openapi({ example: 'User already followed' }),
+          }),
+        },
+      },
+    },
+  },
+});
+
+export const unfollowUserRoute = createRoute({
+  method: 'delete',
+  path: '/{userId}/follow',
+  tags: ['users'],
+  summary: 'Unfollow a user',
+  description: 'Unfollow a user',
+  middleware: [jwtMiddleware],
+  request: {
+    params: unfollowUserParamsSchema,
+  },
+  responses: {
+    [HttpStatusCode.success]: {
+      description: 'User unfollowed',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z
+              .string()
+              .openapi({ example: 'User unfollowed successfully' }),
+            status: z.literal(HttpStatusCode.success),
+          }),
+        },
+      },
+    },
+    [HttpStatusCode.badRequest]: {
+      description: 'User not followed',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string().openapi({ example: 'User not followed' }),
           }),
         },
       },

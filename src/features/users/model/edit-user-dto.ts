@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { userSchema } from '@core/db/schema';
+import { userSchema } from '@core/db/zod-schema';
 
 export const editUserSchema = z.object({
   user: z.object({

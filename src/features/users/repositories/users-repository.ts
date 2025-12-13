@@ -44,8 +44,6 @@ export class UsersRepository extends BaseRepository {
         .where(eq(users.user_id, userId))
         .limit(1);
 
-      console.log(userId, user);
-
       return user;
     });
   }

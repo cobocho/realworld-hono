@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { userSchema } from '@core/db/schema';
+import { userSchema } from '@core/db/zod-schema';
 
 export const getProfileSchema = z.object({
   userId: userSchema.shape.user_id,

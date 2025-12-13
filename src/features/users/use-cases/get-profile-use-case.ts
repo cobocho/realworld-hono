@@ -10,14 +10,17 @@ export class GetProfileUseCase {
     private readonly followRepository: FollowRepository
   ) {}
 
-  async execute(userId: string, relatedUserId?: string) {
+  async execute(targetUserId: string, requesterUserId?: string) {
     const { hash_password: _, ...user } =
-      await this.usersRepository.findByUserId(userId);
+      await this.usersRepository.findByUserId(targetUserId);
 
-    if (relatedUserId && relatedUserId !== userId) {
+    console.log('targetUserId', targetUserId);
+    console.log('requesterUserId', requesterUserId);
+
+    if (requesterUserId && requesterUserId !== targetUserId) {
       const isFollowing = await this.followRepository.isFollowing(
-        userId,
-        relatedUserId
+        targetUserId,
+        requesterUserId
       );
 
       return {

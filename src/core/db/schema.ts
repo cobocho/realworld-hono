@@ -5,8 +5,8 @@ import {
   varchar,
   text,
   uniqueIndex,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
-import { z } from 'zod';
 
 export const users = pgTable('users', {
   user_id: uuid('user_id').primaryKey().defaultRandom(),
@@ -21,46 +21,18 @@ export const users = pgTable('users', {
 
 export type User = typeof users.$inferSelect;
 
-export const userSchema = z.object({
-  user_id: z
-    .uuid()
-    .openapi({ example: '123e4567-e89b-12d3-a456-426614174000' }),
-  email: z
-    .email('Invalid email address')
-    .openapi({ example: 'john.doe@example.com' }),
-  hash_password: z
-    .string('Invalid hash password')
-    .min(8, { message: 'Password must be at least 8 characters long' })
-    .openapi({ example: 'password' }),
-  username: z
-    .string('Invalid username')
-    .min(3, { message: 'Username must be at least 3 characters long' })
-    .max(20, { message: 'Username must be at most 20 characters long' })
-    .openapi({ example: 'john_doe' }),
-  bio: z
-    .string()
-    .max(100, { message: 'Bio must be at most 100 characters long' })
-    .nullable()
-    .openapi({ example: 'I am a software engineer' }),
-  image: z
-    .url('Invalid image URL')
-    .nullable()
-    .openapi({ example: 'https://example.com/image.jpg' }),
-  created_at: z.date().openapi({ example: '2021-01-01' }),
-  updated_at: z.date().openapi({ example: '2021-01-01' }),
-});
-
 export const followings = pgTable(
   'followings',
   {
-    following_id: uuid('following_id').references(() => users.user_id),
-    followed_id: uuid('followed_id').references(() => users.user_id),
+    user_id: uuid('user_id'),
+    follower_id: uuid('follower_id'),
     created_at: timestamp('created_at').notNull().defaultNow(),
   },
   table => [
+    primaryKey({ columns: [table.user_id, table.follower_id] }),
     uniqueIndex('unique_following_followed').on(
-      table.following_id,
-      table.followed_id
+      table.user_id,
+      table.follower_id
     ),
   ]
 );

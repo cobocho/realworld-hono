@@ -6,14 +6,18 @@ import { HttpStatusCode } from '@shared/utils/response';
 
 import {
   editUserRoute,
+  followUserRoute,
   getProfileRoute,
   getUserRoute,
+  unfollowUserRoute,
   userLoginRoute,
   userRegisterRoute,
 } from './docs/openapi';
 import { EditUserUseCase } from './use-cases/edit-user-use-case';
+import { FollowUserUseCase } from './use-cases/follow-user-use-case';
 import { GetProfileUseCase } from './use-cases/get-profile-use-case';
 import { GetUserUseCase } from './use-cases/get-user-use-case';
+import { UnfollowUserUseCase } from './use-cases/unfollow-user-use-case';
 import { UserLoginUseCase } from './use-cases/user-login-use-case';
 import { UserRegistrationUseCase } from './use-cases/user-registration-use-case';
 
@@ -95,12 +99,47 @@ userApp.openapi(getProfileRoute, async c => {
   const userId = c.req.param('userId');
   const payload = c.get('payload') as JwtPayload | undefined;
 
+  console.log(payload);
+
   const getProfileUseCase = container.resolve(GetProfileUseCase);
   const profile = await getProfileUseCase.execute(userId, payload?.userId);
 
   return c.json({
     profile,
     message: 'Profile retrieved successfully' as const,
+    status: HttpStatusCode.success,
+  });
+});
+
+userApp.openapi(followUserRoute, async c => {
+  const payload = c.get('payload') as JwtPayload;
+
+  const followUserUseCase = container.resolve(FollowUserUseCase);
+
+  const user = await followUserUseCase.execute({
+    userId: c.req.param('userId'),
+    followingId: payload.userId,
+  });
+
+  return c.json({
+    user,
+    message: 'User followed successfully' as const,
+    status: HttpStatusCode.success,
+  });
+});
+
+userApp.openapi(unfollowUserRoute, async c => {
+  const payload = c.get('payload') as JwtPayload;
+
+  const unfollowUserUseCase = container.resolve(UnfollowUserUseCase);
+
+  await unfollowUserUseCase.execute({
+    userId: c.req.param('userId'),
+    followingId: payload.userId,
+  });
+
+  return c.json({
+    message: 'User unfollowed successfully' as const,
     status: HttpStatusCode.success,
   });
 });
