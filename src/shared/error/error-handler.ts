@@ -1,17 +1,10 @@
 import type { Context } from 'hono';
-import { ZodError } from 'zod';
 
 import { HttpStatusCode } from '../utils/response';
 
 import { AppError, DatabaseError } from './errors';
 
 export const errorHandler = (err: Error, c: Context) => {
-  if (err instanceof ZodError) {
-    console.log('zod error', err.issues);
-  }
-
-  console.error('error', err);
-
   if (err instanceof DatabaseError) {
     console.error('database error', err.errors);
 

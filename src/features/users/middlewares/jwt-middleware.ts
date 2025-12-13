@@ -11,11 +11,7 @@ export const jwtMiddleware = createMiddleware(async (c, next) => {
   try {
     const tokenHeader = c.req.header('Authorization');
 
-    console.log('tokenHeader', tokenHeader);
-
     const token = tokenHeader?.split(' ')[1];
-
-    console.log('token', token);
 
     if (!token) {
       throw new AuthenticationError('Unauthorized');

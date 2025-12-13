@@ -2,6 +2,8 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { Scalar } from '@scalar/hono-api-reference';
 import { cors } from 'hono/cors';
 
+import { requestMiddleware } from '@core/logging/request-middleware';
+
 import { userApp, usersApp } from '@features/users/users.api';
 
 import { errorHandler } from '@shared/error/error-handler';
@@ -19,6 +21,8 @@ app.use(
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   })
 );
+
+app.use('*', requestMiddleware);
 
 app.get('/', async c => {
   return c.text('Server is running');

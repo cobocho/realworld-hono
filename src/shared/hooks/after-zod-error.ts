@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import { ZodError, z } from 'zod';
 
-import { HttpStatusCode } from '@shared/utils/response';
+import { ValidationError } from '@shared/error/errors';
 
 export const zodErrorSchema = z.object({
   message: z.string().openapi({ example: 'Validation error' }),
@@ -31,16 +31,6 @@ export const afterZodErrorHook = (
   c: Context
 ) => {
   if (!result.success) {
-    return c.json(
-      {
-        message: 'Validation error',
-        errors: result.error.issues.map(issue => ({
-          field: issue.path.join('.'),
-          message: issue.message,
-        })),
-        status: HttpStatusCode.badRequest,
-      },
-      HttpStatusCode.badRequest
-    );
+    throw new ValidationError('Validation error', result.error.issues);
   }
 };
