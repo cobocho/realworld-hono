@@ -3,11 +3,25 @@ import { ZodError } from 'zod';
 
 import { HttpStatusCode } from '../utils/response';
 
-import { AppError } from './errors';
+import { AppError, DatabaseError } from './errors';
 
 export const errorHandler = (err: Error, c: Context) => {
   if (err instanceof ZodError) {
     console.log('zod error', err.issues);
+  }
+
+  console.error('error', err);
+
+  if (err instanceof DatabaseError) {
+    console.error('database error', err.errors);
+
+    return c.json(
+      {
+        message: err.message,
+        status: err.status,
+      },
+      err.status
+    );
   }
 
   if (err instanceof AppError) {
@@ -15,9 +29,9 @@ export const errorHandler = (err: Error, c: Context) => {
       {
         message: err.message,
         errors: err.errors,
-        status: HttpStatusCode.badRequest,
+        status: err.status,
       },
-      HttpStatusCode.badRequest
+      err.status
     );
   }
 

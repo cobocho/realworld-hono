@@ -31,13 +31,16 @@ export const afterZodErrorHook = (
   c: Context
 ) => {
   if (!result.success) {
-    return c.json({
-      message: 'Validation error',
-      errors: result.error.issues.map(issue => ({
-        field: issue.path.join('.'),
-        message: issue.message,
-      })),
-      status: HttpStatusCode.badRequest,
-    });
+    return c.json(
+      {
+        message: 'Validation error',
+        errors: result.error.issues.map(issue => ({
+          field: issue.path.join('.'),
+          message: issue.message,
+        })),
+        status: HttpStatusCode.badRequest,
+      },
+      HttpStatusCode.badRequest
+    );
   }
 };

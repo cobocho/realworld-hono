@@ -2,7 +2,6 @@ import { eq } from 'drizzle-orm';
 import { injectable } from 'tsyringe';
 
 import { BaseRepository } from '@core/db/base-repository';
-import type { User } from '@core/db/schema';
 import { users } from '@core/db/schema';
 
 import { db } from '@integrations/database';
@@ -24,12 +23,24 @@ export class UsersRepository extends BaseRepository {
     );
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string) {
     return this.executeQuery(async () => {
       const [user] = await db
         .select()
         .from(users)
         .where(eq(users.email, email))
+        .limit(1);
+
+      return user;
+    });
+  }
+
+  async findByUserId(userId: string) {
+    return this.executeQuery(async () => {
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.user_id, userId))
         .limit(1);
 
       return user;

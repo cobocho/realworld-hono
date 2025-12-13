@@ -1,8 +1,11 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
+import { jwtMiddleware } from '@features/users/middlewares/jwt-middleware';
+
 import { zodErrorSchema } from '@shared/hooks/after-zod-error';
 import { HttpStatusCode } from '@shared/utils/response';
 
+import { getUserResponseSchema } from '../validation/get-user.dto';
 import {
   userLoginResponseSchema,
   userLoginSchema,
@@ -34,7 +37,9 @@ export const userRegisterRoute = createRoute({
         'application/json': {
           schema: z.object({
             user: userRegisterResponseSchema,
-            message: z.literal('User created successfully'),
+            message: z
+              .string()
+              .openapi({ example: 'User created successfully' }),
             status: z.literal(HttpStatusCode.created),
           }),
         },
@@ -53,7 +58,7 @@ export const userRegisterRoute = createRoute({
       content: {
         'application/json': {
           schema: z.object({
-            message: z.literal('User already exists'),
+            message: z.string().openapi({ example: 'User already exists' }),
           }),
         },
       },
@@ -83,7 +88,9 @@ export const userLoginRoute = createRoute({
         'application/json': {
           schema: z.object({
             user: userLoginResponseSchema,
-            message: z.literal('User logged in successfully'),
+            message: z
+              .string()
+              .openapi({ example: 'User logged in successfully' }),
             status: z.literal(HttpStatusCode.success),
           }),
         },
@@ -95,8 +102,13 @@ export const userLoginRoute = createRoute({
         'application/json': {
           schema: z.object({
             message: z
-              .literal('Invalid Password')
-              .or(z.literal('User with email john.doe@example.com not found')),
+              .string()
+              .openapi({ example: 'Invalid Password' })
+              .or(
+                z.string().openapi({
+                  example: 'User with email john.doe@example.com not found',
+                })
+              ),
           }),
         },
       },
@@ -106,6 +118,41 @@ export const userLoginRoute = createRoute({
       content: {
         'application/json': {
           schema: zodErrorSchema,
+        },
+      },
+    },
+  },
+});
+
+export const getUserRoute = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['users'],
+  summary: 'Get a user',
+  description: 'Get a user',
+  middleware: [jwtMiddleware],
+  responses: {
+    [HttpStatusCode.success]: {
+      description: 'User retrieved',
+      content: {
+        'application/json': {
+          schema: z.object({
+            user: getUserResponseSchema,
+            message: z
+              .string()
+              .openapi({ example: 'User retrieved successfully' }),
+            status: z.literal(HttpStatusCode.success),
+          }),
+        },
+      },
+    },
+    [HttpStatusCode.unauthorized]: {
+      description: 'Unauthorized',
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string().openapi({ example: 'Unauthorized' }),
+          }),
         },
       },
     },

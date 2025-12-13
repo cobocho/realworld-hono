@@ -1,17 +1,23 @@
 import { container } from 'tsyringe';
 
+import type { JwtPayload } from '@shared/types/jwt';
 import { createHono } from '@shared/utils/open-api';
 import { HttpStatusCode } from '@shared/utils/response';
 
-import { userLoginRoute, userRegisterRoute } from './docs/openapi';
+import {
+  getUserRoute,
+  userLoginRoute,
+  userRegisterRoute,
+} from './docs/openapi';
+import { GetUserUseCase } from './use-cases/get-user-use-case';
 import { UserLoginUseCase } from './use-cases/user-login-use-case';
 import { UserRegistrationUseCase } from './use-cases/user-registration-use-case';
 
 import './users.di';
 
-const userApp = createHono();
+export const usersApp = createHono();
 
-userApp.openapi(userRegisterRoute, async c => {
+usersApp.openapi(userRegisterRoute, async c => {
   const user = c.req.valid('json');
 
   const userRegistrationUseCase = container.resolve(UserRegistrationUseCase);
@@ -33,7 +39,7 @@ userApp.openapi(userRegisterRoute, async c => {
   );
 });
 
-userApp.openapi(userLoginRoute, async c => {
+usersApp.openapi(userLoginRoute, async c => {
   const user = c.req.valid('json');
 
   const userLoginUseCase = container.resolve(UserLoginUseCase);
@@ -56,4 +62,18 @@ userApp.openapi(userLoginRoute, async c => {
   );
 });
 
-export default userApp;
+export const userApp = createHono();
+
+userApp.openapi(getUserRoute, async c => {
+  const payload = c.get('payload') as JwtPayload;
+
+  const getUserUseCase = container.resolve(GetUserUseCase);
+
+  const user = await getUserUseCase.execute(payload.userId);
+
+  return c.json({
+    user,
+    message: 'User retrieved successfully' as const,
+    status: HttpStatusCode.success,
+  });
+});
