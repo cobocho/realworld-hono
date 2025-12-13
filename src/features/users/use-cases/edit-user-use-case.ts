@@ -1,7 +1,7 @@
 import { injectable } from 'tsyringe';
 
 import { UsersRepository } from '../repositories/users-repository';
-import type { EditUserDto } from '../validation/edit-user-dto';
+import type { EditUserDto } from '../model/edit-user-dto';
 
 @injectable()
 export class EditUserUseCase {

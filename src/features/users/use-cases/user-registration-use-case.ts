@@ -6,7 +6,7 @@ import { ConflictError } from '@shared/error/errors';
 
 import { UsersRepository } from '../repositories/users-repository';
 import { AuthService } from '../services/auth-service';
-import type { UserRegisterDto } from '../validation/user-register.dto';
+import type { UserRegisterDto } from '../model/user-register.dto';
 
 @injectable()
 export class UserRegistrationUseCase {

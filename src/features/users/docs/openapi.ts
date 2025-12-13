@@ -4,19 +4,20 @@ import { jwtMiddleware } from '@features/users/middlewares/jwt-middleware';
 
 import { HttpStatusCode } from '@shared/utils/response';
 
+import { editUserResponseSchema, editUserSchema } from '../model/edit-user-dto';
 import {
-  editUserResponseSchema,
-  editUserSchema,
-} from '../validation/edit-user-dto';
-import { getUserResponseSchema } from '../validation/get-user.dto';
+  getProfileResponseSchema,
+  getProfileSchema,
+} from '../model/get-profile';
+import { getUserResponseSchema } from '../model/get-user.dto';
 import {
   userLoginResponseSchema,
   userLoginSchema,
-} from '../validation/user-login.dto';
+} from '../model/user-login.dto';
 import {
   userRegisterResponseSchema,
   userRegisterSchema,
-} from '../validation/user-register.dto';
+} from '../model/user-register.dto';
 
 export const userRegisterRoute = createRoute({
   method: 'post',
@@ -120,7 +121,7 @@ export const getUserRoute = createRoute({
 });
 
 export const editUserRoute = createRoute({
-  method: 'get',
+  method: 'put',
   path: '/',
   tags: ['users'],
   summary: 'Edit a user',
@@ -145,6 +146,33 @@ export const editUserRoute = createRoute({
             message: z
               .string()
               .openapi({ example: 'User edited successfully' }),
+            status: z.literal(HttpStatusCode.success),
+          }),
+        },
+      },
+    },
+  },
+});
+
+export const getProfileRoute = createRoute({
+  method: 'get',
+  path: '/{userId}',
+  tags: ['users'],
+  summary: 'Get a profile',
+  description: 'Get a profile',
+  request: {
+    params: getProfileSchema,
+  },
+  responses: {
+    [HttpStatusCode.success]: {
+      description: 'Profile retrieved',
+      content: {
+        'application/json': {
+          schema: z.object({
+            profile: getProfileResponseSchema,
+            message: z
+              .string()
+              .openapi({ example: 'Profile retrieved successfully' }),
             status: z.literal(HttpStatusCode.success),
           }),
         },

@@ -44,3 +44,42 @@ export const jwtMiddleware = createMiddleware(async (c, next) => {
     );
   }
 });
+
+export const optionalJwtMiddleware = createMiddleware(async (c, next) => {
+  try {
+    const tokenHeader = c.req.header('Authorization');
+
+    const token = tokenHeader?.split(' ')[1];
+
+    if (!token) {
+      await next();
+      return;
+    }
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const decoded = isJwtPayload(payload);
+
+    if (!decoded) {
+      throw new AuthenticationError('Invalid token');
+    }
+
+    const sessionCache = container.resolve(SessionCache);
+
+    const hasSession = await sessionCache.hasSession(
+      payload.userId,
+      payload.sessionID
+    );
+
+    if (!hasSession) {
+      throw new AuthenticationError('Invalid token');
+    }
+
+    c.set('payload', payload);
+
+    await next();
+  } catch (error) {
+    throw new AuthenticationError(
+      error instanceof Error ? error.message : 'Unauthorized'
+    );
+  }
+});

@@ -1,4 +1,11 @@
-import { pgTable, timestamp, uuid, varchar, text } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  timestamp,
+  uuid,
+  varchar,
+  text,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 
 export const users = pgTable('users', {
@@ -42,3 +49,20 @@ export const userSchema = z.object({
   created_at: z.date().openapi({ example: '2021-01-01' }),
   updated_at: z.date().openapi({ example: '2021-01-01' }),
 });
+
+export const followings = pgTable(
+  'followings',
+  {
+    following_id: uuid('following_id').references(() => users.user_id),
+    followed_id: uuid('followed_id').references(() => users.user_id),
+    created_at: timestamp('created_at').notNull().defaultNow(),
+  },
+  table => [
+    uniqueIndex('unique_following_followed').on(
+      table.following_id,
+      table.followed_id
+    ),
+  ]
+);
+
+export type Following = typeof followings.$inferSelect;

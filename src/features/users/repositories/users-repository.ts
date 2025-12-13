@@ -6,8 +6,8 @@ import { users } from '@core/db/schema';
 
 import { db } from '@integrations/database';
 
-import type { EditUserDto } from '../validation/edit-user-dto';
-import type { UserRegisterDto } from '../validation/user-register.dto';
+import type { EditUserDto } from '../model/edit-user-dto';
+import type { UserRegisterDto } from '../model/user-register.dto';
 
 @injectable()
 export class UsersRepository extends BaseRepository {
@@ -43,6 +43,8 @@ export class UsersRepository extends BaseRepository {
         .from(users)
         .where(eq(users.user_id, userId))
         .limit(1);
+
+      console.log(userId, user);
 
       return user;
     });

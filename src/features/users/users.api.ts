@@ -6,11 +6,13 @@ import { HttpStatusCode } from '@shared/utils/response';
 
 import {
   editUserRoute,
+  getProfileRoute,
   getUserRoute,
   userLoginRoute,
   userRegisterRoute,
 } from './docs/openapi';
 import { EditUserUseCase } from './use-cases/edit-user-use-case';
+import { GetProfileUseCase } from './use-cases/get-profile-use-case';
 import { GetUserUseCase } from './use-cases/get-user-use-case';
 import { UserLoginUseCase } from './use-cases/user-login-use-case';
 import { UserRegistrationUseCase } from './use-cases/user-registration-use-case';
@@ -85,6 +87,20 @@ userApp.openapi(editUserRoute, async c => {
   return c.json({
     user: updatedUser,
     message: 'User edited successfully' as const,
+    status: HttpStatusCode.success,
+  });
+});
+
+userApp.openapi(getProfileRoute, async c => {
+  const userId = c.req.param('userId');
+  const payload = c.get('payload') as JwtPayload | undefined;
+
+  const getProfileUseCase = container.resolve(GetProfileUseCase);
+  const profile = await getProfileUseCase.execute(userId, payload?.userId);
+
+  return c.json({
+    profile,
+    message: 'Profile retrieved successfully' as const,
     status: HttpStatusCode.success,
   });
 });

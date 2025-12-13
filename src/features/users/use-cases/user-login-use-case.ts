@@ -3,10 +3,10 @@ import { injectable } from 'tsyringe';
 
 import { AuthenticationError } from '@shared/error/errors';
 
+import type { UserLoginDto } from '../model/user-login.dto';
 import { SessionCache } from '../repositories/session-cache';
 import { UsersRepository } from '../repositories/users-repository';
 import { AuthService } from '../services/auth-service';
-import type { UserLoginDto } from '../validation/user-login.dto';
 
 @injectable()
 export class UserLoginUseCase {
