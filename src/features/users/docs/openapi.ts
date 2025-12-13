@@ -2,7 +2,6 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { jwtMiddleware } from '@features/users/middlewares/jwt-middleware';
 
-import { zodErrorSchema } from '@shared/hooks/after-zod-error';
 import { HttpStatusCode } from '@shared/utils/response';
 
 import {
@@ -49,14 +48,6 @@ export const userRegisterRoute = createRoute({
         },
       },
     },
-    [HttpStatusCode.badRequest]: {
-      description: 'Validation error',
-      content: {
-        'application/json': {
-          schema: zodErrorSchema,
-        },
-      },
-    },
     [HttpStatusCode.conflict]: {
       description: 'User already exists',
       content: {
@@ -100,31 +91,6 @@ export const userLoginRoute = createRoute({
         },
       },
     },
-    [HttpStatusCode.unauthorized]: {
-      description: 'Unauthorized',
-      content: {
-        'application/json': {
-          schema: z.object({
-            message: z
-              .string()
-              .openapi({ example: 'Invalid Password' })
-              .or(
-                z.string().openapi({
-                  example: 'User with email john.doe@example.com not found',
-                })
-              ),
-          }),
-        },
-      },
-    },
-    [HttpStatusCode.badRequest]: {
-      description: 'Validation error',
-      content: {
-        'application/json': {
-          schema: zodErrorSchema,
-        },
-      },
-    },
   },
 });
 
@@ -150,21 +116,11 @@ export const getUserRoute = createRoute({
         },
       },
     },
-    [HttpStatusCode.unauthorized]: {
-      description: 'Unauthorized',
-      content: {
-        'application/json': {
-          schema: z.object({
-            message: z.string().openapi({ example: 'Unauthorized' }),
-          }),
-        },
-      },
-    },
   },
 });
 
 export const editUserRoute = createRoute({
-  method: 'put',
+  method: 'get',
   path: '/',
   tags: ['users'],
   summary: 'Edit a user',
@@ -191,24 +147,6 @@ export const editUserRoute = createRoute({
               .openapi({ example: 'User edited successfully' }),
             status: z.literal(HttpStatusCode.success),
           }),
-        },
-      },
-    },
-    [HttpStatusCode.unauthorized]: {
-      description: 'Unauthorized',
-      content: {
-        'application/json': {
-          schema: z.object({
-            message: z.string().openapi({ example: 'Unauthorized' }),
-          }),
-        },
-      },
-    },
-    [HttpStatusCode.badRequest]: {
-      description: 'Validation error',
-      content: {
-        'application/json': {
-          schema: zodErrorSchema,
         },
       },
     },

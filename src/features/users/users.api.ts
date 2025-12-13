@@ -23,18 +23,12 @@ usersApp.openapi(userRegisterRoute, async c => {
   const user = c.req.valid('json');
 
   const userRegistrationUseCase = container.resolve(UserRegistrationUseCase);
-  const { username, email, bio, image } =
-    await userRegistrationUseCase.execute(user);
+  const createdUser = await userRegistrationUseCase.execute(user);
 
   return c.json(
     {
       message: 'User created successfully' as const,
-      user: {
-        email,
-        username,
-        bio,
-        image,
-      },
+      user: createdUser,
       status: HttpStatusCode.created,
     },
     HttpStatusCode.created
@@ -83,14 +77,13 @@ userApp.openapi(getUserRoute, async c => {
 userApp.openapi(editUserRoute, async c => {
   const payload = c.get('payload') as JwtPayload;
 
+  const user = c.req.valid('json');
+
   const editUserUseCase = container.resolve(EditUserUseCase);
-  const user = await editUserUseCase.execute(
-    payload.userId,
-    c.req.valid('json')
-  );
+  const updatedUser = await editUserUseCase.execute(payload.userId, user);
 
   return c.json({
-    user,
+    user: updatedUser,
     message: 'User edited successfully' as const,
     status: HttpStatusCode.success,
   });
