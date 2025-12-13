@@ -15,12 +15,12 @@ export class UnfollowUserUseCase {
   ) {}
 
   async execute({
-    followingId,
+    followerId,
     userId,
-  }: UnfollowUserParamsDto & { followingId: string }) {
+  }: UnfollowUserParamsDto & { followerId: string }) {
     const isFollowing = await this.followRepository.isFollowing(
       userId,
-      followingId
+      followerId
     );
 
     if (!isFollowing) {
@@ -31,7 +31,7 @@ export class UnfollowUserUseCase {
       );
     }
 
-    await this.followRepository.deleteFollow(userId, followingId);
+    await this.followRepository.deleteFollow(userId, followerId);
 
     return true;
   }

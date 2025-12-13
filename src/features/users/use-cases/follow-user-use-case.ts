@@ -15,12 +15,12 @@ export class FollowUserUseCase {
   ) {}
 
   async execute({
-    followingId,
     userId,
-  }: FollowUserParamsDto & { followingId: string }) {
+    followerId,
+  }: FollowUserParamsDto & { followerId: string }) {
     const isFollowing = await this.followRepository.isFollowing(
       userId,
-      followingId
+      followerId
     );
 
     if (isFollowing) {
@@ -31,7 +31,7 @@ export class FollowUserUseCase {
       );
     }
 
-    await this.followRepository.upsertFollow(userId, followingId);
+    await this.followRepository.upsertFollow(userId, followerId);
 
     const followingUser = await this.usersRepository.findByUserId(userId);
 

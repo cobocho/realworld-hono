@@ -118,7 +118,7 @@ userApp.openapi(followUserRoute, async c => {
 
   const user = await followUserUseCase.execute({
     userId: c.req.param('userId'),
-    followingId: payload.userId,
+    followerId: payload.userId,
   });
 
   return c.json({
@@ -135,7 +135,7 @@ userApp.openapi(unfollowUserRoute, async c => {
 
   await unfollowUserUseCase.execute({
     userId: c.req.param('userId'),
-    followingId: payload.userId,
+    followerId: payload.userId,
   });
 
   return c.json({
