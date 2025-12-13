@@ -5,7 +5,10 @@ import { jwtMiddleware } from '@features/users/middlewares/jwt-middleware';
 import { zodErrorSchema } from '@shared/hooks/after-zod-error';
 import { HttpStatusCode } from '@shared/utils/response';
 
-import { editUserSchema } from '../validation/edit-user-dto';
+import {
+  editUserResponseSchema,
+  editUserSchema,
+} from '../validation/edit-user-dto';
 import { getUserResponseSchema } from '../validation/get-user.dto';
 import {
   userLoginResponseSchema,
@@ -179,6 +182,17 @@ export const editUserRoute = createRoute({
   responses: {
     [HttpStatusCode.success]: {
       description: 'User edited',
+      content: {
+        'application/json': {
+          schema: z.object({
+            user: editUserResponseSchema,
+            message: z
+              .string()
+              .openapi({ example: 'User edited successfully' }),
+            status: z.literal(HttpStatusCode.success),
+          }),
+        },
+      },
     },
     [HttpStatusCode.unauthorized]: {
       description: 'Unauthorized',

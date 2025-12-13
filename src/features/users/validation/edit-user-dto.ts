@@ -1,17 +1,19 @@
 import { z } from 'zod';
 
+import { userSchema } from '@core/db/schema';
+
 export const editUserSchema = z.object({
   user: z.object({
-    email: z
-      .email('Invalid email address')
-      .optional()
-      .openapi({ example: 'john.doe@example.com' }),
-    bio: z.string().optional().openapi({ example: 'I am a software engineer' }),
-    image: z
-      .url('Invalid image URL')
-      .optional()
-      .openapi({ example: 'https://example.com/image.jpg' }),
+    email: userSchema.shape.email.optional(),
+    bio: userSchema.shape.bio.optional(),
+    image: userSchema.shape.image.optional(),
   }),
 });
 
 export type EditUserDto = z.infer<typeof editUserSchema>;
+
+export const editUserResponseSchema = userSchema.omit({
+  hash_password: true,
+});
+
+export type EditUserResponseDto = z.infer<typeof editUserResponseSchema>;

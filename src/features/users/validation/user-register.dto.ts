@@ -1,47 +1,19 @@
 import { z } from 'zod';
 
+import { userSchema } from '@core/db/schema';
+
 export const userRegisterSchema = z.object({
   user: z.object({
-    username: z
-      .string()
-      .min(3, {
-        message: 'Username must be at least 3 characters long',
-      })
-      .max(20, {
-        message: 'Username must be at most 20 characters long',
-      })
-      .openapi({
-        example: 'john_doe',
-      }),
-    email: z.email().openapi({
-      example: 'john.doe@example.com',
-    }),
-    password: z
-      .string()
-      .min(8, {
-        message: 'Password must be at least 8 characters long',
-      })
-      .openapi({
-        example: 'password',
-      }),
+    username: userSchema.shape.username,
+    email: userSchema.shape.email,
+    password: userSchema.shape.hash_password,
   }),
 });
 
 export type UserRegisterDto = z.infer<typeof userRegisterSchema>;
 
-export const userRegisterResponseSchema = z.object({
-  username: z.string().openapi({ example: 'john_doe' }),
-  email: z.string().openapi({ example: 'john.doe@example.com' }),
-  bio: z
-    .string()
-    .nullable()
-    .optional()
-    .openapi({ example: 'I am a software engineer' }),
-  image: z
-    .string()
-    .nullable()
-    .optional()
-    .openapi({ example: 'https://example.com/image.jpg' }),
+export const userRegisterResponseSchema = userSchema.omit({
+  hash_password: true,
 });
 
 export type UserRegisterResponseDto = z.infer<
