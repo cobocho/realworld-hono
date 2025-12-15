@@ -34,6 +34,10 @@ export const followings = pgTable(
       table.user_id,
       table.follower_id
     ),
+    uniqueIndex('unique_follower_id_user_id').on(
+      table.follower_id,
+      table.user_id
+    ),
   ]
 );
 

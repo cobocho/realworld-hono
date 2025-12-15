@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "unique_follower_id_user_id" ON "followings" USING btree ("follower_id","user_id");
