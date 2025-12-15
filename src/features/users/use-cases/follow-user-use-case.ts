@@ -6,12 +6,14 @@ import { HttpStatusCode } from '@shared/utils/response';
 import type { FollowUserParamsDto } from '../model/follow-user.dto';
 import { FollowRepository } from '../repositories/follow-repository';
 import { UsersRepository } from '../repositories/users-repository';
+import { UserDomainService } from '../services/user-domain-service';
 
 @injectable()
 export class FollowUserUseCase {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly followRepository: FollowRepository
+    private readonly followRepository: FollowRepository,
+    private readonly userDomainService: UserDomainService
   ) {}
 
   async execute({
@@ -23,11 +25,13 @@ export class FollowUserUseCase {
       followerId
     );
 
-    if (isFollowing) {
+    try {
+      this.userDomainService.validateFollowAction(followerId, userId, isFollowing);
+    } catch (error) {
       throw new AppError(
         HttpStatusCode.badRequest,
-        'User already followed',
-        'USER_ALREADY_FOLLOWED'
+        error instanceof Error ? error.message : 'Follow validation failed',
+        'FOLLOW_VALIDATION_ERROR'
       );
     }
 

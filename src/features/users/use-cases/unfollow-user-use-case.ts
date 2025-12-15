@@ -6,12 +6,14 @@ import { HttpStatusCode } from '@shared/utils/response';
 import type { UnfollowUserParamsDto } from '../model/unfollow-user.dto';
 import { FollowRepository } from '../repositories/follow-repository';
 import { UsersRepository } from '../repositories/users-repository';
+import { UserDomainService } from '../services/user-domain-service';
 
 @injectable()
 export class UnfollowUserUseCase {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly followRepository: FollowRepository
+    private readonly followRepository: FollowRepository,
+    private readonly userDomainService: UserDomainService
   ) {}
 
   async execute({
@@ -23,11 +25,13 @@ export class UnfollowUserUseCase {
       followerId
     );
 
-    if (!isFollowing) {
+    try {
+      this.userDomainService.validateUnfollowAction(followerId, userId, isFollowing);
+    } catch (error) {
       throw new AppError(
         HttpStatusCode.badRequest,
-        'User not followed',
-        'USER_NOT_FOLLOWED'
+        error instanceof Error ? error.message : 'Unfollow validation failed',
+        'UNFOLLOW_VALIDATION_ERROR'
       );
     }
 

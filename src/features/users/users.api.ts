@@ -99,8 +99,6 @@ userApp.openapi(getProfileRoute, async c => {
   const userId = c.req.param('userId');
   const payload = c.get('payload') as JwtPayload | undefined;
 
-  console.log(payload);
-
   const getProfileUseCase = container.resolve(GetProfileUseCase);
   const profile = await getProfileUseCase.execute(userId, payload?.userId);
 

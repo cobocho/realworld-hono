@@ -6,15 +6,15 @@ import { ConflictError } from '@shared/error/errors';
 
 import type { UserRegisterDto } from '../model/user-register.dto';
 import { UsersRepository } from '../repositories/users-repository';
-import { AuthService } from '../services/auth-service';
+import { AuthDomainService } from '../services/auth-domain-service';
 
 @injectable()
 export class UserRegistrationUseCase {
   constructor(
     @inject(UsersRepository)
     private readonly usersRepository: UsersRepository,
-    @inject(AuthService)
-    private readonly authService: AuthService
+    @inject(AuthDomainService)
+    private readonly AuthDomainService: AuthDomainService
   ) {}
 
   async execute({ user }: UserRegisterDto): Promise<User> {
@@ -24,7 +24,9 @@ export class UserRegistrationUseCase {
       throw new ConflictError(`User with email ${user.email} already exists`);
     }
 
-    const hashedPassword = await this.authService.hashPassword(user.password);
+    const hashedPassword = await this.AuthDomainService.hashPassword(
+      user.password
+    );
 
     return this.usersRepository.createUser({
       user: { ...user, password: hashedPassword },

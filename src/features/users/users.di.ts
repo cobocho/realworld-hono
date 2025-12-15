@@ -5,7 +5,8 @@ import { RedisService } from '@shared/cache/redis-service';
 
 import { FollowRepository } from './repositories/follow-repository';
 import { UsersRepository } from './repositories/users-repository';
-import { AuthService } from './services/auth-service';
+import { AuthDomainService } from './services/auth-domain-service';
+import { UserDomainService } from './services/user-domain-service';
 import { EditUserUseCase } from './use-cases/edit-user-use-case';
 import { FollowUserUseCase } from './use-cases/follow-user-use-case';
 import { GetProfileUseCase } from './use-cases/get-profile-use-case';
@@ -31,7 +32,8 @@ container.register(GetProfileUseCase, { useClass: GetProfileUseCase });
 container.register(FollowUserUseCase, { useClass: FollowUserUseCase });
 container.register(UnfollowUserUseCase, { useClass: UnfollowUserUseCase });
 
-container.register(AuthService, { useClass: AuthService });
+container.register(AuthDomainService, { useClass: AuthDomainService });
+container.register(UserDomainService, { useClass: UserDomainService });
 container.register(RedisService, { useClass: RedisService });
 
 export { container };

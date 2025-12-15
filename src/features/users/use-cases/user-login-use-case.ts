@@ -6,13 +6,13 @@ import { AuthenticationError } from '@shared/error/errors';
 import type { UserLoginDto } from '../model/user-login.dto';
 import { SessionCache } from '../repositories/session-cache';
 import { UsersRepository } from '../repositories/users-repository';
-import { AuthService } from '../services/auth-service';
+import { AuthDomainService } from '../services/auth-domain-service';
 
 @injectable()
 export class UserLoginUseCase {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly authService: AuthService,
+    private readonly AuthDomainService: AuthDomainService,
     private readonly sessionCache: SessionCache
   ) {}
 
@@ -23,7 +23,7 @@ export class UserLoginUseCase {
       throw new AuthenticationError('Invalid password or email');
     }
 
-    const isPasswordValid = await this.authService.comparePassword(
+    const isPasswordValid = await this.AuthDomainService.comparePassword(
       user.password,
       existingUser.hash_password
     );
@@ -33,7 +33,7 @@ export class UserLoginUseCase {
     }
 
     const { token, sessionID, expiresIn } =
-      await this.authService.generateToken(existingUser.user_id);
+      await this.AuthDomainService.generateToken(existingUser.user_id);
 
     await this.sessionCache.saveSession(
       existingUser.user_id,

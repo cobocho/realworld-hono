@@ -7,11 +7,12 @@ import { users } from '@core/db/schema';
 import { db } from '@integrations/database';
 
 import type { EditUserDto } from '../model/edit-user-dto';
-import type { UserRegisterDto } from '../model/user-register.dto';
 
 @injectable()
 export class UsersRepository extends BaseRepository {
-  async createUser(userData: UserRegisterDto) {
+  async createUser(userData: {
+    user: { username: string; email: string; password: string };
+  }) {
     return this.insertOne(() =>
       db
         .insert(users)

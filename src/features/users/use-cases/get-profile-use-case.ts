@@ -14,9 +14,6 @@ export class GetProfileUseCase {
     const { hash_password: _, ...user } =
       await this.usersRepository.findByUserId(targetUserId);
 
-    console.log('targetUserId', targetUserId);
-    console.log('requesterUserId', requesterUserId);
-
     if (requesterUserId && requesterUserId !== targetUserId) {
       const isFollowing = await this.followRepository.isFollowing(
         targetUserId,

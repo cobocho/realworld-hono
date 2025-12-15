@@ -28,9 +28,6 @@ export class FollowRepository extends BaseRepository {
   }
 
   async isFollowing(userId: string, followerId: string) {
-    console.log('userId', userId);
-    console.log('followerId', followerId);
-
     const result = await this.findOne(() =>
       db
         .select()
@@ -43,8 +40,6 @@ export class FollowRepository extends BaseRepository {
         )
         .limit(1)
     );
-
-    console.log('result', result);
 
     return result !== null;
   }

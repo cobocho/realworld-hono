@@ -6,7 +6,7 @@ import { injectable } from 'tsyringe';
 import type { JwtPayload } from '@shared/types/jwt';
 
 @injectable()
-export class AuthService {
+export class AuthDomainService {
   private readonly saltRounds = 10;
 
   async hashPassword(password: string): Promise<string> {
