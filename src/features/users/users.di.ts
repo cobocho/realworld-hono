@@ -1,12 +1,13 @@
 import { container } from 'tsyringe';
 
-import redis from '@shared/cache/redis-client'; // redis 클라이언트 import
-import { RedisService } from '@shared/cache/redis-service';
+import { RedisClient } from '@shared/cache/redis-client';
 
+import { FollowCache } from './repositories/follow-cache';
 import { FollowRepository } from './repositories/follow-repository';
+import { SessionCache } from './repositories/session-cache';
+import { UserCache } from './repositories/user-cache';
 import { UsersRepository } from './repositories/users-repository';
 import { AuthDomainService } from './services/auth-domain-service';
-import { UserDomainService } from './services/user-domain-service';
 import { EditUserUseCase } from './use-cases/edit-user-use-case';
 import { FollowUserUseCase } from './use-cases/follow-user-use-case';
 import { GetProfileUseCase } from './use-cases/get-profile-use-case';
@@ -16,9 +17,12 @@ import { UserLoginUseCase } from './use-cases/user-login-use-case';
 import { UserRegistrationUseCase } from './use-cases/user-registration-use-case';
 
 container.register('RedisClient', {
-  useValue: redis,
+  useClass: RedisClient,
 });
 
+container.register(UserCache, { useClass: UserCache });
+container.register(SessionCache, { useClass: SessionCache });
+container.register(FollowCache, { useClass: FollowCache });
 container.register(UsersRepository, { useClass: UsersRepository });
 container.register(FollowRepository, { useClass: FollowRepository });
 
@@ -33,7 +37,5 @@ container.register(FollowUserUseCase, { useClass: FollowUserUseCase });
 container.register(UnfollowUserUseCase, { useClass: UnfollowUserUseCase });
 
 container.register(AuthDomainService, { useClass: AuthDomainService });
-container.register(UserDomainService, { useClass: UserDomainService });
-container.register(RedisService, { useClass: RedisService });
 
 export { container };

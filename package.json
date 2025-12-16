@@ -19,6 +19,7 @@
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.0",
     "drizzle-zod": "^0.8.3",
+    "es-toolkit": "^1.43.0",
     "hono": "^4.10.8",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.3",

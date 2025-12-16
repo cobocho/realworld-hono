@@ -12,20 +12,23 @@ import { AuthDomainService } from '../services/auth-domain-service';
 export class UserLoginUseCase {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly AuthDomainService: AuthDomainService,
+    private readonly authDomainService: AuthDomainService,
     private readonly sessionCache: SessionCache
   ) {}
 
   async execute({ user }: UserLoginDto) {
-    const existingUser = await this.usersRepository.findByEmail(user.email);
+    const existingUser = await this.usersRepository.findByEmail(
+      user.email,
+      true
+    );
 
     if (!existingUser) {
       throw new AuthenticationError('Invalid password or email');
     }
 
-    const isPasswordValid = await this.AuthDomainService.comparePassword(
+    const isPasswordValid = await this.authDomainService.comparePassword(
       user.password,
-      existingUser.hash_password
+      existingUser.hash_password!
     );
 
     if (!isPasswordValid) {
@@ -33,7 +36,7 @@ export class UserLoginUseCase {
     }
 
     const { token, sessionID, expiresIn } =
-      await this.AuthDomainService.generateToken(existingUser.user_id);
+      await this.authDomainService.generateToken(existingUser.user_id);
 
     await this.sessionCache.saveSession(
       existingUser.user_id,

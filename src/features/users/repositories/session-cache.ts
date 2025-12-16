@@ -1,16 +1,19 @@
 // session.cache.ts
 import { injectable } from 'tsyringe';
 
-import RedisClient, { type RedisInstance } from '@shared/cache/redis-client';
+import { RedisClient, type RedisInstance } from '@shared/cache/redis-client';
 
 @injectable()
 export class SessionCache {
   private readonly MAX_SESSIONS = 5;
+
+  constructor(private readonly redisClient: RedisClient) {}
+
   private redis: RedisInstance | null = null;
 
   private async getRedis(): Promise<RedisInstance> {
     if (!this.redis) {
-      this.redis = await RedisClient.getClient();
+      this.redis = await this.redisClient.getClient();
     }
     return this.redis;
   }

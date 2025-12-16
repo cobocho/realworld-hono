@@ -1,9 +1,12 @@
 import 'reflect-metadata';
-import { runRedis } from '@shared/cache/redis-client';
+import { container } from 'tsyringe';
+
+import { RedisClient } from '@shared/cache/redis-client';
 
 export async function setupInfrastructure() {
   try {
-    await runRedis();
+    const redisClient = container.resolve(RedisClient);
+    await redisClient.getClient();
     console.log('✅ Redis connected successfully');
   } catch (error) {
     console.error('❌ Failed to setup infrastructure:', error);

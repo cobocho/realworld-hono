@@ -1,59 +1,65 @@
+// redis-client.ts
 import { createClient } from 'redis';
+import { singleton } from 'tsyringe';
 
 export type RedisInstance = ReturnType<typeof createClient>;
 
-class RedisClient {
-  private static instance: RedisInstance | null = null;
-  private static isConnecting = false;
-  private static connectionPromise: Promise<void> | null = null;
+@singleton()
+export class RedisClient {
+  private client: RedisInstance | null = null;
+  private isConnecting = false;
+  private connectionPromise: Promise<RedisInstance> | null = null;
 
-  static async getClient() {
-    if (this.instance) {
-      return this.instance;
+  async getClient(): Promise<RedisInstance> {
+    if (this.client) {
+      return this.client;
     }
 
     if (this.isConnecting && this.connectionPromise) {
-      await this.connectionPromise;
-      return this.instance!;
+      return this.connectionPromise;
     }
 
     this.isConnecting = true;
     this.connectionPromise = this.connect();
-    await this.connectionPromise;
 
-    return this.instance!;
+    return this.connectionPromise;
   }
 
-  private static async connect() {
-    this.instance = createClient({
+  private async connect(): Promise<RedisInstance> {
+    this.client = createClient({
       url: process.env.REDIS_URL || 'redis://localhost:6379',
     });
 
-    this.instance.on('connect', () => {
+    this.client.on('connect', () => {
       console.log('✅ Redis connecting...');
     });
 
-    this.instance.on('ready', () => {
+    this.client.on('ready', () => {
       console.log('✅ Redis ready');
     });
 
-    this.instance.on('error', err => {
+    this.client.on('error', err => {
       console.error('❌ Redis error:', err);
     });
 
-    this.instance.on('end', () => {
+    this.client.on('end', () => {
       console.log('⚠️ Redis connection closed');
-      this.instance = null;
+      this.client = null;
       this.isConnecting = false;
     });
 
-    await this.instance.connect();
+    await this.client.connect();
     this.isConnecting = false;
+
+    return this.client;
+  }
+
+  async disconnect(): Promise<void> {
+    if (this.client) {
+      await this.client.quit();
+      this.client = null;
+    }
   }
 }
-
-export const runRedis = async () => {
-  await RedisClient.getClient();
-};
 
 export default RedisClient;

@@ -1,7 +1,6 @@
 import { injectable } from 'tsyringe';
 
-import { AppError } from '@shared/error/errors';
-import { HttpStatusCode } from '@shared/utils/response';
+import { BadRequestError, NotFoundError } from '@shared/error/errors';
 
 import type { FollowUserParamsDto } from '../model/follow-user.dto';
 import { FollowRepository } from '../repositories/follow-repository';
@@ -19,23 +18,20 @@ export class FollowUserUseCase {
     followerId,
   }: FollowUserParamsDto & { followerId: string }) {
     const existingUser = await this.usersRepository.findByUserId(userId);
+
     if (!existingUser) {
-      throw new AppError(
-        HttpStatusCode.badRequest,
-        'User not found',
-        'USER_NOT_FOUND'
-      );
+      throw new NotFoundError('User not found');
     }
 
     const existingFollower =
       await this.usersRepository.findByUserId(followerId);
 
     if (!existingFollower) {
-      throw new AppError(
-        HttpStatusCode.badRequest,
-        'Follower not found',
-        'FOLLOWER_NOT_FOUND'
-      );
+      throw new NotFoundError('Follower not found');
+    }
+
+    if (userId === followerId) {
+      throw new BadRequestError('You cannot follow yourself');
     }
 
     const isFollowing = await this.followRepository.isFollowing(
@@ -44,11 +40,7 @@ export class FollowUserUseCase {
     );
 
     if (isFollowing) {
-      throw new AppError(
-        HttpStatusCode.badRequest,
-        'User already followed',
-        'USER_ALREADY_FOLLOWED'
-      );
+      throw new BadRequestError('User already followed');
     }
 
     await this.followRepository.upsertFollow(userId, followerId);

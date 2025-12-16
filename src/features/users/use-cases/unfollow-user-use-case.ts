@@ -1,7 +1,6 @@
 import { injectable } from 'tsyringe';
 
-import { AppError } from '@shared/error/errors';
-import { HttpStatusCode } from '@shared/utils/response';
+import { BadRequestError, NotFoundError } from '@shared/error/errors';
 
 import type { UnfollowUserParamsDto } from '../model/unfollow-user.dto';
 import { FollowRepository } from '../repositories/follow-repository';
@@ -18,25 +17,23 @@ export class UnfollowUserUseCase {
     followerId,
     userId,
   }: UnfollowUserParamsDto & { followerId: string }) {
+    const followers = await this.followRepository.getFollowers(userId);
+
+    if (!followers.includes(followerId)) {
+      throw new BadRequestError('User not followed');
+    }
+
     const existingUser = await this.usersRepository.findByUserId(userId);
 
     if (!existingUser) {
-      throw new AppError(
-        HttpStatusCode.badRequest,
-        'User not found',
-        'USER_NOT_FOUND'
-      );
+      throw new NotFoundError('User not found');
     }
 
     const existingFollower =
       await this.usersRepository.findByUserId(followerId);
 
     if (!existingFollower) {
-      throw new AppError(
-        HttpStatusCode.badRequest,
-        'Follower not found',
-        'FOLLOWER_NOT_FOUND'
-      );
+      throw new NotFoundError('Follower not found');
     }
 
     const isFollowing = await this.followRepository.isFollowing(
@@ -45,11 +42,7 @@ export class UnfollowUserUseCase {
     );
 
     if (!isFollowing) {
-      throw new AppError(
-        HttpStatusCode.badRequest,
-        'User not followed',
-        'USER_NOT_FOLLOWED'
-      );
+      throw new BadRequestError('User not followed');
     }
 
     await this.followRepository.deleteFollow(userId, followerId);

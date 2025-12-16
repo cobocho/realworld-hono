@@ -7,9 +7,6 @@ export class GetUserUseCase {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute(userId: string) {
-    const { hash_password: _, ...user } =
-      await this.usersRepository.findByUserId(userId);
-
-    return user;
+    return this.usersRepository.findByUserId(userId);
   }
 }

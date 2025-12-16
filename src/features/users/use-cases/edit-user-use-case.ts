@@ -10,6 +10,7 @@ export class EditUserUseCase {
   async execute(userId: string, { user }: EditUserDto) {
     const { hash_password: _, ...updatedUser } =
       await this.usersRepository.updateUser(userId, { user });
+
     return updatedUser;
   }
 }

@@ -19,7 +19,7 @@ export class AppError extends HTTPException {
 // 검증 에러
 export class ValidationError extends AppError {
   constructor(message: string, errors?: unknown) {
-    super(400, message, 'VALIDATION_ERROR', errors);
+    super(HttpStatusCode.badRequest, message, 'VALIDATION_ERROR', errors);
   }
 }
 
@@ -38,34 +38,34 @@ export class DatabaseError extends AppError {
 // 인증 에러
 export class AuthenticationError extends AppError {
   constructor(message: string = 'Authentication required') {
-    super(401, message, 'AUTHENTICATION_ERROR');
+    super(HttpStatusCode.unauthorized, message, 'AUTHENTICATION_ERROR');
   }
 }
 
 // 권한 에러
 export class AuthorizationError extends AppError {
   constructor(message: string = 'Authorization required') {
-    super(403, message, 'AUTHORIZATION_ERROR');
+    super(HttpStatusCode.forbidden, message, 'AUTHORIZATION_ERROR');
   }
 }
 
 // 리소스 없음 에러
 export class NotFoundError extends AppError {
   constructor(resource: string = 'Resource not found') {
-    super(404, `${resource} not found`, 'NOT_FOUND');
+    super(HttpStatusCode.notFound, `${resource} not found`, 'NOT_FOUND');
   }
 }
 
 // 중복 에러
 export class ConflictError extends AppError {
   constructor(message: string) {
-    super(409, message, 'CONFLICT_ERROR');
+    super(HttpStatusCode.conflict, message, 'CONFLICT_ERROR');
   }
 }
 
 // 비즈니스 로직 에러
-export class BusinessError extends AppError {
+export class BadRequestError extends AppError {
   constructor(message: string, details?: unknown) {
-    super(422, message, 'BUSINESS_ERROR', details);
+    super(HttpStatusCode.badRequest, message, 'BAD_REQUEST_ERROR', details);
   }
 }
